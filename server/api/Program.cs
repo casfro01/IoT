@@ -104,7 +104,14 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-            db.Database.EnsureCreated();
+            try
+            {
+                db.Database.EnsureCreated();
+            }
+            catch (Exception _)
+            {
+                // den er tydeligvis lavet
+            }
         }
         
         app.UseOpenApi();
