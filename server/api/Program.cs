@@ -29,7 +29,6 @@ public class Program
         // repos
         
         // services
-        //services.AddScoped<IService<BaseBookResponse, CreateBookDto, UpdateBookDto>, BookService>();
         services.AddScoped<ISieveProcessor, SieveProcessor>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, JwtService>();
