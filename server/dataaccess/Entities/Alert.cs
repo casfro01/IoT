@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace dataaccess;
+namespace DataAccess.Entities;
 
 public partial class Alert
 {
     public string Id { get; set; } = null!;
 
-    public string? Turbineid { get; set; }
+    [MaxLength(32)]public string? Turbineid { get; set; }
 
     public DateTime Alerted { get; set; }
 
-    public string? Message { get; set; }
+    [MaxLength(1000)] public string? Message { get; set; }
 
     public int Severity { get; set; }
 
