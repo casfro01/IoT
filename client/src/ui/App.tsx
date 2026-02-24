@@ -1,9 +1,26 @@
-import './App.css'
+import {createBrowserRouter, Outlet, RouterProvider} from "react-router";
+import LoginPage from "./pages/LoginPage/LoginPage.tsx";
+import {Toaster} from "react-hot-toast";
 
 function App() {
   return (
     <>
-      Hej med dig jeg hedder kaj, bam bam bam!!!
+        <header><title>Turbine Lars</title></header>
+
+        <RouterProvider router={createBrowserRouter([
+            {
+                path: "/",
+                element: <Outlet></Outlet>,
+                children:[
+                    {
+                        path: "/login",
+                        element: <LoginPage/>
+                    },
+                ]
+            }
+        ])}
+        />
+        <Toaster position="top-center" reverseOrder={false}/>
     </>
   )
 }
