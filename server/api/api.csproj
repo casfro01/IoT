@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="StateleSSE.AspNetCore" Version="4.0.0-preview.1" />
+        <PackageReference Include="Mqtt.Controllers" Version="*" />
         <PackageReference Include="NSwag.AspNetCore" Version="14.5.0" />
         <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="14.5.0"/>
         <PackageReference Include="NSwag.Generation" Version="14.6.3" />

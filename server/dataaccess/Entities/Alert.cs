@@ -8,7 +8,7 @@ public partial class Alert
 {
     public string Id { get; set; } = null!;
 
-    [MaxLength(32)]public string? Turbineid { get; set; }
+    public string? Turbineid { get; set; }
 
     public DateTime Alerted { get; set; }
 

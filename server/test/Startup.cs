@@ -1,5 +1,6 @@
 ﻿using api;
 using dataaccess;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -11,7 +12,7 @@ public class Startup
 {
     public static void ConfigureServices(IServiceCollection services)
     {
-        Program.ConfigureServices(services);
+        Program.ConfigureServices(services, WebApplication.CreateBuilder());
         services.RemoveAll(typeof(MyDbContext));
 
         services.AddScoped<MyDbContext>(factory =>

@@ -4,10 +4,8 @@ namespace DataAccess.Entities;
 
 public partial class Turbinemetric
 {
-    [MaxLength(32)]
     public string Id { get; set; } = null!;
-
-    [MaxLength(32)]
+    
     public string Turbineid { get; set; } = null!;
 
     public DateTime Timestamputc { get; set; }

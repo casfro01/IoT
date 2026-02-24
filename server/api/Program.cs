@@ -1,5 +1,6 @@
 
 using System.Text.Json.Serialization;
+using api.Seeders;
 using dataaccess;
 using DataAccess.Entities;
 using DefaultNamespace;
@@ -27,7 +28,6 @@ public class Program
         services.AddOpenApiDocument();
 
         // repos
-        
         // services
         services.AddScoped<ISieveProcessor, SieveProcessor>();
         services.AddScoped<IAuthService, AuthService>();
@@ -36,8 +36,10 @@ public class Program
         
         // seeder
         //services.AddScoped<ISeeder, BogusSeed>();
-        //services.AddScoped<ISeeder, SimpleSeeder>();
+        services.AddScoped<ISeeder, UserSeeder>();
+        
         services.AddProblemDetails();
+        services.AddExceptionHandler<GlobalExceptionHandler>();
         
         services.AddDbContext<MyDbContext>((services, options) =>
         {
@@ -101,18 +103,6 @@ public class Program
         
         var app = builder.Build();
         
-        using (var scope = app.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
-            try
-            {
-                db.Database.EnsureCreated();
-            }
-            catch (Exception _)
-            {
-                // den er tydeligvis lavet
-            }
-        }
         
         app.UseOpenApi();
         app.UseSwaggerUi();
@@ -127,7 +117,9 @@ public class Program
         // for development
         using (var scope = app.Services.CreateScope())
         {
-            //scope.ServiceProvider.GetRequiredService<ISeeder>().Seed().GetAwaiter().GetResult();
+            var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
+            db.Database.EnsureCreated();
+            scope.ServiceProvider.GetRequiredService<ISeeder>().Seed().GetAwaiter().GetResult();
         }
         
         app.Run();

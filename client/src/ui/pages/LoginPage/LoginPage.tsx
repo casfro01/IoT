@@ -1,29 +1,10 @@
-﻿import React, { useState } from "react";
-import "./LoginPage.css";
-import {IconAlert, IconCheck, IconEye, IconEyeOff, IconLock, IconMail} from "../../../core/Icons/Icons.tsx";
+﻿import "./LoginPage.css";
+import {IconAlert, IconCheck, IconEye, IconEyeOff, IconLock, IconMail} from "../../Icons/Icons.tsx";
+import {validateEmail} from "../../../utils/ValidateEmail.ts";
+import { useLoginForm } from "./useLoginForm.ts";
 
-/* ── Types ── */
-interface LoginForm {
-    email: string;
-    password: string;
-}
 
-interface AlertState {
-    type: "error" | "success" | null;
-    message: string;
-}
-
-/* ── Validation ── */
-const validateEmail = (email: string): boolean =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-/* ── API helper ── */
-interface LoginResponse {
-    token?: string;
-    user?: { id: string; name: string; email: string };
-    message?: string;
-}
-
+/*
 const loginRequest = async (email: string, password: string): Promise<LoginResponse> => {
     const response = await fetch("/api/auth/login", {
         method: "POST",
@@ -38,17 +19,24 @@ const loginRequest = async (email: string, password: string): Promise<LoginRespo
     }
 
     return data;
-};
+};*/
 
-/* ── Component ── */
 export default function LoginPage() {
-    const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
-    const [showPw, setShowPw] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [alert, setAlert] = useState<AlertState>({ type: null, message: "" });
-    const [touched, setTouched] = useState({ email: false, password: false });
+    
+    const {
+        form,
+        showPw,
+        loading,
+        alert,
+        touched,
+        setForm,
+        setShowPw,
+        setAlert,
+        setTouched,
+        handleSubmit,
+    } = useLoginForm();
 
-    const emailError  = touched.email    && form.email    && !validateEmail(form.email);
+    const emailError = touched.email && form.email && !validateEmail(form.email);
     const passwordError = touched.password && form.password.length > 0 && form.password.length < 6;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,6 +50,7 @@ export default function LoginPage() {
         setTouched((prev) => ({ ...prev, [field]: true }));
     };
 
+    /*
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setTouched({ email: true, password: true });
@@ -93,7 +82,7 @@ export default function LoginPage() {
         } finally {
             setLoading(false);
         }
-    };
+    };*/
 
     return (
         <>

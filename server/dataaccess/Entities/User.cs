@@ -6,7 +6,7 @@ namespace DataAccess.Entities;
 
 public partial class User
 {
-    [MaxLength(32)]public string Id { get; set; } = null!;
+   public string Id { get; set; } = null!;
 
     [EmailAddress]
     [MaxLength(1000)]

@@ -26,8 +26,8 @@ public class JwtService(IConfiguration config) : ITokenService
                 SignatureAlgorithm
             ),
             Subject = new ClaimsIdentity(user.ToClaims()),
-            // TODO : Huske at ændre dette på et tidspunkt
-            Expires = DateTime.UtcNow.AddDays(7),
+            // 2 Timer er den gyldig, så skal man logge ind igen
+            Expires = DateTime.UtcNow.AddHours(2),
         };
         var tokenHandler = new JsonWebTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);

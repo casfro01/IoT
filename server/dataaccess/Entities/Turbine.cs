@@ -4,7 +4,6 @@ namespace DataAccess.Entities;
 
 public partial class Turbine
 {
-    [MaxLength(32)]
     public string Id { get; set; } = null!;
 
     [MaxLength(100)]
