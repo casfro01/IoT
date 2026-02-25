@@ -3,24 +3,6 @@ import {IconAlert, IconCheck, IconEye, IconEyeOff, IconLock, IconMail} from "../
 import {validateEmail} from "../../../utils/ValidateEmail.ts";
 import { useLoginForm } from "./useLoginForm.ts";
 
-
-/*
-const loginRequest = async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), password }),
-    });
-
-    const data: LoginResponse = await response.json();
-
-    if (!response.ok) {
-        throw new Error(data.message ?? `HTTP ${response.status}`);
-    }
-
-    return data;
-};*/
-
 export default function LoginPage() {
     
     const {
@@ -49,40 +31,6 @@ export default function LoginPage() {
     const handleBlur = (field: keyof typeof touched) => {
         setTouched((prev) => ({ ...prev, [field]: true }));
     };
-
-    /*
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setTouched({ email: true, password: true });
-
-        if (!form.email || !validateEmail(form.email)) {
-            setAlert({ type: "error", message: "Indtast venligst en gyldig e-mailadresse." });
-            return;
-        }
-        if (!form.password || form.password.length < 6) {
-            setAlert({ type: "error", message: "Adgangskoden skal være mindst 6 tegn." });
-            return;
-        }
-
-        setLoading(true);
-        setAlert({ type: null, message: "" });
-
-        try {
-            const result = await loginRequest(form.email, form.password);
-            // Gem token (tilpas efter behov)
-            if (result.token) {
-                localStorage.setItem("auth_token", result.token);
-            }
-            setAlert({ type: "success", message: "Login lykkedes! Du omdirigeres nu…" });
-            // TODO: router.push("/dashboard") eller tilsvarende navigation
-        } catch (err: unknown) {
-            const message =
-                err instanceof Error ? err.message : "Forkert e-mail eller adgangskode.";
-            setAlert({ type: "error", message });
-        } finally {
-            setLoading(false);
-        }
-    };*/
 
     return (
         <>
@@ -160,7 +108,9 @@ export default function LoginPage() {
                                     onClick={() => {setShowPw((v) => !v); console.log("jens")}}
                                     aria-label={showPw ? "Skjul adgangskode" : "Vis adgangskode"}
                                 >
-                                    {showPw ? <IconEyeOff /> : <IconEye />}
+                                    <div className="shift-eye-to-the-right">
+                                        {showPw ? <IconEyeOff /> : <IconEye />}
+                                    </div>
                                 </button>
                             </div>
                             {passwordError && (
