@@ -11,9 +11,9 @@ public class UserSeeder(MyDbContext ctx, IPasswordHasher<User> hasher) : ISeeder
 {
     public async Task Seed()
     {
-        //await ctx.Database.EnsureCreatedAsync();
-        //ctx.Users.RemoveRange(ctx.Users);
-        //await ctx.SaveChangesAsync();
+        await ctx.Database.EnsureCreatedAsync();
+        ctx.Users.RemoveRange(ctx.Users);
+        await ctx.SaveChangesAsync();
 
         User user1 = new User()
         {
