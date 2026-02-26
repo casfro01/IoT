@@ -13,8 +13,44 @@ public class UserSeeder(MyDbContext ctx, IPasswordHasher<User> hasher) : ISeeder
     {
         await ctx.Database.EnsureCreatedAsync();
         ctx.Users.RemoveRange(ctx.Users);
+        ctx.Turbines.RemoveRange(ctx.Turbines);
         await ctx.SaveChangesAsync();
 
+        Turbine t1 = new Turbine()
+        {
+            Alerts = new List<Alert>(),
+            Displayname = "Alpha",
+            Id = "turbine-alpha",
+            Turbinemetrics = new List<Turbinemetric>(),
+        };
+        Turbine t2 = new Turbine()
+        {
+            Alerts = new List<Alert>(),
+            Displayname = "Beta",
+            Id = "turbine-beta",
+            Turbinemetrics = new List<Turbinemetric>(),
+        };
+        Turbine t3 = new Turbine()
+        {
+            Alerts = new List<Alert>(),
+            Displayname = "Gamma",
+            Id = "turbine-gamma",
+            Turbinemetrics = new List<Turbinemetric>(),
+        };
+        Turbine t4 = new Turbine()
+        {
+            Alerts = new List<Alert>(),
+            Displayname = "Delta",
+            Id = "turbine-delta",
+            Turbinemetrics = new List<Turbinemetric>(),
+        };
+
+        ctx.Turbines.Add(t1);
+        ctx.Turbines.Add(t2);
+        ctx.Turbines.Add(t3);
+        ctx.Turbines.Add(t4);
+        
+        
         User user1 = new User()
         {
             Id  = Guid.NewGuid().ToString(),

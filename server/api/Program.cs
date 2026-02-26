@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Mqtt.Controllers;
 using service;
 using service.Abstractions;
 using service.Security;
@@ -33,6 +34,7 @@ public class Program
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, JwtService>();
         services.AddScoped<IPasswordHasher<User>, NSecArgon2IdPasswordHasher>();
+        services.AddScoped<ITurbineService, TurbineService>();
         
         // seeder
         //services.AddScoped<ISeeder, BogusSeed>();
@@ -86,7 +88,7 @@ public class Program
         
         
         
-
+        services.AddMqttControllers();
         services.AddControllers()
         .AddJsonOptions(options =>
         {
@@ -117,6 +119,11 @@ public class Program
         // for development
         using (var scope = app.Services.CreateScope())
         {
+            // Add mqtt 
+            var mqtt = app.Services.GetRequiredService<IMqttClientService>();
+            mqtt.ConnectAsync("broker.hivemq.com", 1883).GetAwaiter().GetResult();
+            
+            
             var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
             db.Database.EnsureCreated();
             scope.ServiceProvider.GetRequiredService<ISeeder>().Seed().GetAwaiter().GetResult();
