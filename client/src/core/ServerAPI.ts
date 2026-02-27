@@ -245,8 +245,12 @@ export class TurbineClient {
         return Promise.resolve<void>(null as any);
     }
 
-    getTurbines(): Promise<TurbineResponse> {
-        let url_ = this.baseUrl + "/api/Turbine/GetTurbines";
+    getTurbines(metricAmount: number | undefined): Promise<TurbineResponse[]> {
+        let url_ = this.baseUrl + "/api/Turbine/GetTurbines?";
+        if (metricAmount === null)
+            throw new globalThis.Error("The parameter 'metricAmount' cannot be null.");
+        else if (metricAmount !== undefined)
+            url_ += "metricAmount=" + encodeURIComponent("" + metricAmount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -261,13 +265,13 @@ export class TurbineClient {
         });
     }
 
-    protected processGetTurbines(response: Response): Promise<TurbineResponse> {
+    protected processGetTurbines(response: Response): Promise<TurbineResponse[]> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TurbineResponse;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as TurbineResponse[];
             return result200;
             });
         } else if (status !== 200 && status !== 204) {
@@ -275,7 +279,7 @@ export class TurbineClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<TurbineResponse>(null as any);
+        return Promise.resolve<TurbineResponse[]>(null as any);
     }
 
     executeCommand(request: CommandRequest): Promise<CommandResponse> {

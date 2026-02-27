@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using dataaccess;
 using DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
 using service.Models;
 using service.Models.Request;
 using service.Models.Responses;
@@ -10,7 +11,7 @@ namespace service;
 
 public interface ITurbineService : IService<TurbineTelemetryResponse, TurbineTelemetry, CommandRequest>
 {
-    
+    public Task<List<TurbineResponse>> GetTurbines(int includeMetrics);
 }
 
 /// <summary>
@@ -88,5 +89,27 @@ public class TurbineService(MyDbContext db) : ITurbineService
     public Task<TurbineTelemetryResponse> Delete(string id)
     {
         throw new UnauthorizedAccessException("Kun kommunen må gøre dette, fordi de er seje");
+    }
+
+    public async Task<List<TurbineResponse>> GetTurbines(int includeMetrics)
+    {
+        if (includeMetrics > 100) throw new ValidationException("Too many metrics; max 100");
+        var turbines = await db.Turbines.ToListAsync();
+        List<TurbineResponse> list = new();
+        foreach (Turbine t in turbines)
+        {
+            var reponsetype = new TurbineResponse(t);
+            var mLst = await db.Turbinemetrics
+                .OrderByDescending(m => m.Timestamputc)
+                .Take(includeMetrics)
+                .ToListAsync();
+            reponsetype.Metrics = mLst
+                .Select(tm => new TurbineTelemetryResponse(tm))
+                .ToList();
+            
+            list.Add(reponsetype);
+        }
+
+        return list;
     }
 }

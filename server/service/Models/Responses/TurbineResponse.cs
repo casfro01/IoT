@@ -1,8 +1,10 @@
-﻿namespace service.Models.Responses;
+﻿using DataAccess.Entities;
 
-public class TurbineResponse
+namespace service.Models.Responses;
+
+public class TurbineResponse(Turbine t)
 {
-    public string Id { get; set; }
-    public string Displayname { get; set; }
+    public string Id { get; set; } = t.Id;
+    public string Displayname { get; set; } = t.Displayname;
     public List<TurbineTelemetryResponse> Metrics { get; set; } = new();
 }

@@ -171,13 +171,27 @@
           "Turbine"
         ],
         "operationId": "Turbine_GetTurbines",
+        "parameters": [
+          {
+            "name": "metricAmount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TurbineResponse"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TurbineResponse"
+                  }
                 }
               }
             }

@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using dataaccess;
+using DataAccess.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using service;
 using service.Models.Request;
 using service.Models.Responses;
+using Sieve.Models;
 using StateleSSE.AspNetCore;
 using StateleSSE.AspNetCore.EfRealtime;
 using StateleSSE.AspNetCore.GroupRealtime;
@@ -14,22 +19,24 @@ namespace api.Controllers;
 public class TurbineController(
     ISseBackplane backplane, 
     IRealtimeManager realtimeManager, 
-    IGroupRealtimeManager groupManager) : RealtimeControllerBase(backplane)
+    IGroupRealtimeManager groupManager,
+    ITurbineService turbineService) : RealtimeControllerBase(backplane)
 {
     [HttpGet(nameof(ConnectToAllTurbines))]
-    public async Task ConnectToAllTurbines(string connectionId){
-        throw new NotImplementedException();
+    public async Task ConnectToAllTurbines(string connectionId)
+    {
+        await ConnectToGroup(connectionId, "all");
     }
     
     [HttpGet(nameof(ConnectToTurbine))]
     public async Task ConnectToTurbine(string connectionId, string turbineId){
-        throw new NotImplementedException();
+        await ConnectToGroup(connectionId, turbineId);
     }
 
     [HttpGet(nameof(GetTurbines))]
-    public async Task<TurbineResponse> GetTurbines()
+    public async Task<List<TurbineResponse>> GetTurbines(int metricAmount)
     {
-        throw new NotImplementedException();
+        return await turbineService.GetTurbines(metricAmount);
     }
 
 
@@ -40,8 +47,19 @@ public class TurbineController(
     }
 
 
-    private async Task ConnectToGroup(string connectionId, string name)
+    private async Task ConnectToGroup(string connectionId, string turbineId)
     {
-        
+        realtimeManager.UnsubscribeAll(connectionId);
+        await backplane.Groups.AddToGroupAsync(connectionId, turbineId);
+        realtimeManager.Subscribe<MyDbContext>(connectionId, turbineId, 
+            criteria: changes =>
+            {
+                var change = changes.HasAdded<Turbinemetric>();
+                return change;
+            },
+            query: async c => await c.Turbinemetrics
+                .Where(t => turbineId == "all" || t.Turbineid == turbineId)
+                .OrderByDescending(t => t.Timestamputc)
+                .ToListAsync());
     }
 }
