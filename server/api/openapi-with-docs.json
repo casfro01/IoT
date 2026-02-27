@@ -185,6 +185,38 @@
         }
       }
     },
+    "/api/Turbine/ExecuteCommand": {
+      "post": {
+        "tags": [
+          "Turbine"
+        ],
+        "operationId": "Turbine_ExecuteCommand",
+        "requestBody": {
+          "x-name": "request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommandRequest"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Turbine/sse": {
       "get": {
         "tags": [
@@ -334,6 +366,44 @@
             "format": "double"
           },
           "status": {
+            "type": "string"
+          }
+        }
+      },
+      "CommandResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "timeOfExecution",
+          "action"
+        ],
+        "properties": {
+          "timeOfExecution": {
+            "type": "string",
+            "format": "date-time",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "CommandRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action"
+        ],
+        "properties": {
+          "action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
             "type": "string"
           }
         }

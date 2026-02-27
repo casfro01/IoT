@@ -278,6 +278,43 @@ export class TurbineClient {
         return Promise.resolve<TurbineResponse>(null as any);
     }
 
+    executeCommand(request: CommandRequest): Promise<CommandResponse> {
+        let url_ = this.baseUrl + "/api/Turbine/ExecuteCommand";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processExecuteCommand(_response);
+        });
+    }
+
+    protected processExecuteCommand(response: Response): Promise<CommandResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as CommandResponse;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CommandResponse>(null as any);
+    }
+
     connect(): Promise<void> {
         let url_ = this.baseUrl + "/api/Turbine/sse";
         url_ = url_.replace(/[?&]$/, "");
@@ -355,6 +392,17 @@ export interface TurbineTelemetryResponse {
     gearboxTemp?: number;
     vibration?: number;
     status?: string;
+}
+
+export interface CommandResponse {
+    timeOfExecution: string;
+    action: string;
+    value?: string;
+}
+
+export interface CommandRequest {
+    action: string;
+    value?: string;
 }
 
 export interface FileResponse {

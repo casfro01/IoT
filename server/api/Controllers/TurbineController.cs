@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using service.Models.Request;
 using service.Models.Responses;
 using StateleSSE.AspNetCore;
 using StateleSSE.AspNetCore.EfRealtime;
@@ -27,6 +28,13 @@ public class TurbineController(
 
     [HttpGet(nameof(GetTurbines))]
     public async Task<TurbineResponse> GetTurbines()
+    {
+        throw new NotImplementedException();
+    }
+
+
+    [HttpPost(nameof(ExecuteCommand))]
+    public async Task<CommandResponse> ExecuteCommand([FromBody] CommandRequest request)
     {
         throw new NotImplementedException();
     }

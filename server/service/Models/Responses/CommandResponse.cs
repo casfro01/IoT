@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace service.Models.Request;
+namespace api.Controllers;
 
-public class CommandRequest
+public class CommandResponse
 {
+    [Required] public DateTime TimeOfExecution { get; set; }
     [Required] public string Action { get; set; } = null!;
     public string Value { get; set; }
 }
