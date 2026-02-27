@@ -110,6 +110,93 @@
           }
         }
       }
+    },
+    "/api/Turbine/ConnectToAllTurbines": {
+      "get": {
+        "tags": [
+          "Turbine"
+        ],
+        "operationId": "Turbine_ConnectToAllTurbines",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Turbine/ConnectToTurbine": {
+      "get": {
+        "tags": [
+          "Turbine"
+        ],
+        "operationId": "Turbine_ConnectToTurbine",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "turbineId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/Turbine/GetTurbines": {
+      "get": {
+        "tags": [
+          "Turbine"
+        ],
+        "operationId": "Turbine_GetTurbines",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurbineResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Turbine/sse": {
+      "get": {
+        "tags": [
+          "Turbine"
+        ],
+        "operationId": "Turbine_Connect",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "components": {
@@ -173,6 +260,80 @@
             "type": "string"
           },
           "role": {
+            "type": "string"
+          }
+        }
+      },
+      "TurbineResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "displayname": {
+            "type": "string"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TurbineTelemetryResponse"
+            }
+          }
+        }
+      },
+      "TurbineTelemetryResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "turbineName": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "windSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "windDirection": {
+            "type": "number",
+            "format": "double"
+          },
+          "ambientTemperature": {
+            "type": "number",
+            "format": "double"
+          },
+          "rotorSpeed": {
+            "type": "number",
+            "format": "double"
+          },
+          "powerOutput": {
+            "type": "number",
+            "format": "double"
+          },
+          "nacelleDirection": {
+            "type": "number",
+            "format": "double"
+          },
+          "bladePitch": {
+            "type": "number",
+            "format": "double"
+          },
+          "generatorTemp": {
+            "type": "number",
+            "format": "double"
+          },
+          "gearboxTemp": {
+            "type": "number",
+            "format": "double"
+          },
+          "vibration": {
+            "type": "number",
+            "format": "double"
+          },
+          "status": {
             "type": "string"
           }
         }

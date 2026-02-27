@@ -13,6 +13,9 @@ using service;
 using service.Abstractions;
 using service.Security;
 using Sieve.Services;
+using StateleSSE.AspNetCore;
+using StateleSSE.AspNetCore.Extensions;
+using StateleSSE.AspNetCore.GroupRealtime;
 
 namespace api;
 public class Program
@@ -43,10 +46,19 @@ public class Program
         services.AddProblemDetails();
         services.AddExceptionHandler<GlobalExceptionHandler>();
         
+        // redis + backplane
+        //builder.Services.AddRedisSseBackplane(); // aktiver, når man er tættere på produktions dagen
+        builder.Services.AddInMemorySseBackplane();
+        builder.Services.AddGroupRealtime();
+        builder.Services.AddEfRealtime();
+        
+        // Dbcontext
         services.AddDbContext<MyDbContext>((services, options) =>
         {
             options.UseNpgsql(services.GetRequiredService<AppOptions>().DbConnectionString)
                 /*.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)*/;
+            
+            options.AddEfRealtimeInterceptor(services); // hooks into SaveChanges
         });
         
         
