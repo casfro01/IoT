@@ -199,12 +199,23 @@
         }
       }
     },
-    "/api/Turbine/ExecuteCommand": {
+    "/api/Turbine/{sensorId}/command": {
       "post": {
         "tags": [
           "Turbine"
         ],
         "operationId": "Turbine_ExecuteCommand",
+        "parameters": [
+          {
+            "name": "sensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
         "requestBody": {
           "x-name": "request",
           "content": {
@@ -215,18 +226,11 @@
             }
           },
           "required": true,
-          "x-position": 1
+          "x-position": 2
         },
         "responses": {
           "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommandResponse"
-                }
-              }
-            }
+            "description": ""
           }
         }
       }
@@ -325,6 +329,12 @@
             "items": {
               "$ref": "#/components/schemas/TurbineTelemetryResponse"
             }
+          },
+          "alerts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AlertResponse"
+            }
           }
         }
       },
@@ -384,25 +394,28 @@
           }
         }
       },
-      "CommandResponse": {
+      "AlertResponse": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "timeOfExecution",
-          "action"
-        ],
         "properties": {
-          "timeOfExecution": {
-            "type": "string",
-            "format": "date-time",
-            "minLength": 1
-          },
-          "action": {
-            "type": "string",
-            "minLength": 1
-          },
-          "value": {
+          "id": {
             "type": "string"
+          },
+          "turbineId": {
+            "type": "string",
+            "nullable": true
+          },
+          "alerted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "severity": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -418,7 +431,8 @@
             "minLength": 1
           },
           "value": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           }
         }
       }

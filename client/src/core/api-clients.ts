@@ -1,4 +1,5 @@
 ﻿import {AuthClient} from "./ServerAPI.ts"
+import {TurbineClient} from "./ServerAPI.ts"
 import {TOKEN_KEY, tokenStorage} from "./atoms/token.ts";
 
 
@@ -21,3 +22,4 @@ const customFetch = async (url: RequestInfo, init?: RequestInit) => {
 const baseUrl = undefined;
 
 export const authClient = new AuthClient(baseUrl, { fetch: customFetch });
+export const turbineClient = new TurbineClient(baseUrl, { fetch: customFetch });

@@ -1,8 +1,11 @@
-﻿using dataaccess;
+using System.Text.Json;
+using dataaccess;
 using DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Mqtt.Controllers;
+using NLog.LayoutRenderers.Wrappers;
 using service;
 using service.Models.Request;
 using service.Models.Responses;
@@ -20,7 +23,8 @@ public class TurbineController(
     ISseBackplane backplane, 
     IRealtimeManager realtimeManager, 
     IGroupRealtimeManager groupManager,
-    ITurbineService turbineService) : RealtimeControllerBase(backplane)
+    ITurbineService turbineService,
+    IMqttClientService mqtt) : RealtimeControllerBase(backplane)
 {
     [HttpGet(nameof(ConnectToAllTurbines))]
     public async Task ConnectToAllTurbines(string connectionId)
@@ -40,10 +44,34 @@ public class TurbineController(
     }
 
 
-    [HttpPost(nameof(ExecuteCommand))]
-    public async Task<CommandResponse> ExecuteCommand([FromBody] CommandRequest request)
+    [HttpPost("{sensorId}/command")]
+    // tilføj CommandResponse return her igen måske i stedet for void
+    public async Task ExecuteCommand(string sensorId, [FromBody] CommandRequest request)
     {
-        throw new NotImplementedException();
+        // dette skal ændres med en enum i commandrequest eller sådan noget, det hele er faktisk ret most
+        var payload = new Dictionary<string, object?>
+        {
+            ["action"] = request.Action
+        };
+
+        switch (request.Action)
+        {
+            case "setPitch":
+                payload["angle"] = request.Value;
+                break;
+            case "start":
+                break;
+            case "stop":
+                payload["reason"] = request.Value;
+                break;
+            case "setInterval":
+                payload["value"] = request.Value;
+                break;
+        }
+        
+        string json = JsonSerializer.Serialize(payload);
+        
+        await mqtt.PublishAsync($"farm/29c129fe-d28e-4a12-810e-af5ac7456fad/windmill/{sensorId}/command", json);
     }
 
 

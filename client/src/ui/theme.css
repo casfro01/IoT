@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Global palette & base ── */
+:root {
+    --olive:        #4a5e2f;
+    --olive-dark:   #2f3d1c;
+    --olive-mid:    #6b7c45;
+    --spring:       #8db848;
+    --spring-light: #b5d96b;
+    --spring-pale:  #dff0b0;
+    --cream:        #f5f2e8;
+    --ink:          #1e2410;
+    --muted:        #7a8560;
+    --error:        #c0392b;
+    --error-bg:     #fdf0ee;
+    --error-border: #e8b4ae;
+    --shadow:       rgba(47, 61, 28, 0.18);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    min-height: 100vh;
+    color: var(--ink);
+}
+

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using dataaccess;
 using DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -70,12 +70,11 @@ public class TurbineService(MyDbContext db) : ITurbineService
     }
 
     /// <summary>
-    /// Udfører en kommando til at justere på turbinenen - bliver nok flyttet, lucas hvad synes du?
+    /// Udfører en kommando til at justere på turbinenen - bliver nok flyttet, lucas hvad synes du? hmmmm det ved jeg ikke
     /// </summary>
     /// <param name="request"></param>
-    /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public Task<TurbineTelemetryResponse> Update(CommandRequest request)
+    public async Task<TurbineTelemetryResponse> Update(CommandRequest request)
     {
         throw new NotImplementedException();
     }
@@ -100,13 +99,21 @@ public class TurbineService(MyDbContext db) : ITurbineService
         {
             var reponsetype = new TurbineResponse(t);
             var mLst = await db.Turbinemetrics
+                .Include(m => m.Turbine)
+                .Where(m => m.Turbineid == t.Id)
                 .OrderByDescending(m => m.Timestamputc)
                 .Take(includeMetrics)
                 .ToListAsync();
             reponsetype.Metrics = mLst
                 .Select(tm => new TurbineTelemetryResponse(tm))
                 .ToList();
-            
+
+            var alerts = await db.Alerts
+                .Where(a => a.Turbineid == t.Id)
+                .OrderByDescending(a => a.Alerted)
+                .ToListAsync();
+            reponsetype.Alerts = alerts.Select(a => new AlertResponse(a)).ToList();
+
             list.Add(reponsetype);
         }
 

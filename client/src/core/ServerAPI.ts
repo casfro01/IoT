@@ -282,8 +282,11 @@ export class TurbineClient {
         return Promise.resolve<TurbineResponse[]>(null as any);
     }
 
-    executeCommand(request: CommandRequest): Promise<CommandResponse> {
-        let url_ = this.baseUrl + "/api/Turbine/ExecuteCommand";
+    executeCommand(sensorId: string, request: CommandRequest): Promise<void> {
+        let url_ = this.baseUrl + "/api/Turbine/{sensorId}/command";
+        if (sensorId === undefined || sensorId === null)
+            throw new globalThis.Error("The parameter 'sensorId' must be defined.");
+        url_ = url_.replace("{sensorId}", encodeURIComponent("" + sensorId));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -293,7 +296,6 @@ export class TurbineClient {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json"
             }
         };
 
@@ -302,21 +304,19 @@ export class TurbineClient {
         });
     }
 
-    protected processExecuteCommand(response: Response): Promise<CommandResponse> {
+    protected processExecuteCommand(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as CommandResponse;
-            return result200;
+            return;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<CommandResponse>(null as any);
+        return Promise.resolve<void>(null as any);
     }
 
     connect(): Promise<void> {
@@ -380,6 +380,7 @@ export interface TurbineResponse {
     id?: string;
     displayname?: string;
     metrics?: TurbineTelemetryResponse[];
+    alerts?: AlertResponse[];
 }
 
 export interface TurbineTelemetryResponse {
@@ -398,15 +399,17 @@ export interface TurbineTelemetryResponse {
     status?: string;
 }
 
-export interface CommandResponse {
-    timeOfExecution: string;
-    action: string;
-    value?: string;
+export interface AlertResponse {
+    id?: string;
+    turbineId?: string | undefined;
+    alerted?: string;
+    message?: string | undefined;
+    severity?: number;
 }
 
 export interface CommandRequest {
     action: string;
-    value?: string;
+    value?: string | undefined;
 }
 
 export interface FileResponse {

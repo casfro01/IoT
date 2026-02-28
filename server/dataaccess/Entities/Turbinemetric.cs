@@ -33,4 +33,4 @@ public partial class Turbinemetric
     public bool? Status { get; set; }
 
     public virtual Turbine Turbine { get; set; } = null!;
-}
+}   

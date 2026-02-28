@@ -11,7 +11,6 @@ public class TurbineDataCollectorController(ITurbineService service) : MqttContr
     public async Task CollectSensorData(string turbineId, TurbineTelemetry data)
     {
         await service.Create(data);
-        Console.WriteLine("Thing saved");
         // TODO : måske noget som kan notify ting og sager? idk, måske ikke nødvendig hvis man subber til changetracker
     }
 }

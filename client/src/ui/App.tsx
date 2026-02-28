@@ -1,5 +1,6 @@
 import {createBrowserRouter, Outlet, RouterProvider} from "react-router";
 import LoginPage from "./pages/LoginPage/LoginPage.tsx";
+import DashboardPage from "./pages/Dashboard/DashboardPage.tsx";
 import {Toaster} from "react-hot-toast";
 
 function App() {
@@ -7,18 +8,23 @@ function App() {
     <>
         <header><title>Turbine Lars</title></header>
 
-        <RouterProvider router={createBrowserRouter([
-            {
-                path: "/",
-                element: <Outlet></Outlet>,
-                children:[
-                    {
-                        path: "/login",
-                        element: <LoginPage/>
-                    },
-                ]
-            }
-        ])}
+        <RouterProvider
+            router={createBrowserRouter([
+                {
+                    path: "/",
+                    element: <Outlet />,
+                    children: [
+                        {
+                            index: true,
+                            element: <DashboardPage />,
+                        },
+                        {
+                            path: "login",
+                            element: <LoginPage />,
+                        },
+                    ],
+                },
+            ])}
         />
         <Toaster position="top-center" reverseOrder={false}/>
     </>

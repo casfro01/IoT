@@ -1,4 +1,4 @@
-﻿using DataAccess.Entities;
+using DataAccess.Entities;
 
 namespace service.Models.Responses;
 
@@ -33,6 +33,6 @@ public class TurbineTelemetryResponse
         GeneratorTemp = data.Generatortemp == null ? 0 : (double) data.Generatortemp;
         GearboxTemp = data.Gearboxtemp == null ? 0 : (double) data.Gearboxtemp;
         Vibration = data.Vibration == null ? 0 : (double) data.Vibration;
-        Status = data.Status ?? false ? "running" : "stopped";
+        Status = (data.Status ?? false) ? "running" : "stopped";
     }
 }

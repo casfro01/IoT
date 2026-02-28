@@ -38,6 +38,7 @@ public class Program
         services.AddScoped<ITokenService, JwtService>();
         services.AddScoped<IPasswordHasher<User>, NSecArgon2IdPasswordHasher>();
         services.AddScoped<ITurbineService, TurbineService>();
+        services.AddScoped<IAlertService, AlertService>();
         
         // seeder
         //services.AddScoped<ISeeder, BogusSeed>();
