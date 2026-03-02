@@ -23,18 +23,19 @@ public class TurbineController(
     ISseBackplane backplane, 
     IRealtimeManager realtimeManager, 
     IGroupRealtimeManager groupManager,
+    TurbineSubscriberService subService,
     ITurbineService turbineService,
     IMqttClientService mqtt) : RealtimeControllerBase(backplane)
 {
     [HttpGet(nameof(ConnectToAllTurbines))]
     public async Task ConnectToAllTurbines(string connectionId)
     {
-        await ConnectToGroup(connectionId, "all");
+        await subService.ConnectToGroup(connectionId, "all");
     }
     
     [HttpGet(nameof(ConnectToTurbine))]
     public async Task ConnectToTurbine(string connectionId, string turbineId){
-        await ConnectToGroup(connectionId, turbineId);
+        await subService.ConnectToGroup(connectionId, turbineId);
     }
 
     [HttpGet(nameof(GetTurbines))]
@@ -72,22 +73,5 @@ public class TurbineController(
         string json = JsonSerializer.Serialize(payload);
         
         await mqtt.PublishAsync($"farm/29c129fe-d28e-4a12-810e-af5ac7456fad/windmill/{sensorId}/command", json);
-    }
-
-
-    private async Task ConnectToGroup(string connectionId, string turbineId)
-    {
-        realtimeManager.UnsubscribeAll(connectionId);
-        await backplane.Groups.AddToGroupAsync(connectionId, turbineId);
-        realtimeManager.Subscribe<MyDbContext>(connectionId, turbineId, 
-            criteria: changes =>
-            {
-                var change = changes.HasAdded<Turbinemetric>();
-                return change;
-            },
-            query: async c => await c.Turbinemetrics
-                .Where(t => turbineId == "all" || t.Turbineid == turbineId)
-                .OrderByDescending(t => t.Timestamputc)
-                .ToListAsync());
     }
 }

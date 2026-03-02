@@ -39,6 +39,7 @@ public class Program
         services.AddScoped<IPasswordHasher<User>, NSecArgon2IdPasswordHasher>();
         services.AddScoped<ITurbineService, TurbineService>();
         services.AddScoped<IAlertService, AlertService>();
+        services.AddScoped<TurbineSubscriberService>();
         
         // seeder
         //services.AddScoped<ISeeder, BogusSeed>();

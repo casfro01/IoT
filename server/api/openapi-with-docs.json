@@ -6,6 +6,42 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/alerts/ConnectToAlerts": {
+      "get": {
+        "tags": [
+          "Alert"
+        ],
+        "operationId": "Alert_ConnectToAlerts",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/alerts/sse": {
+      "get": {
+        "tags": [
+          "Alert"
+        ],
+        "operationId": "Alert_Connect",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/auth/login": {
       "post": {
         "tags": [

@@ -7,6 +7,7 @@
   </PropertyGroup>
     
     <ItemGroup>
+        <PackageReference Include="StateleSSE.AspNetCore" Version="4.0.0-preview.1" />
         <PackageReference Include="Sieve.Query.Builder" Version="1.1.2" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.14.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.9" />
