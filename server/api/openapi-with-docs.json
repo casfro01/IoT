@@ -29,6 +29,40 @@
         }
       }
     },
+    "/api/alerts/GetAlerts": {
+      "get": {
+        "tags": [
+          "Alert"
+        ],
+        "operationId": "Alert_GetAlerts",
+        "parameters": [
+          {
+            "name": "amount",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/alerts/sse": {
       "get": {
         "tags": [
@@ -287,6 +321,31 @@
   },
   "components": {
     "schemas": {
+      "AlertResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "turbineId": {
+            "type": "string",
+            "nullable": true
+          },
+          "alerted": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "severity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
       "LoginResponse": {
         "type": "object",
         "additionalProperties": false,
@@ -427,31 +486,6 @@
           },
           "status": {
             "type": "string"
-          }
-        }
-      },
-      "AlertResponse": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "turbineId": {
-            "type": "string",
-            "nullable": true
-          },
-          "alerted": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "message": {
-            "type": "string",
-            "nullable": true
-          },
-          "severity": {
-            "type": "integer",
-            "format": "int32"
           }
         }
       },

@@ -51,6 +51,43 @@ export class AlertClient {
         return Promise.resolve<void>(null as any);
     }
 
+    getAlerts(amount: number | undefined): Promise<AlertResponse[]> {
+        let url_ = this.baseUrl + "/api/alerts/GetAlerts?";
+        if (amount === null)
+            throw new globalThis.Error("The parameter 'amount' cannot be null.");
+        else if (amount !== undefined)
+            url_ += "amount=" + encodeURIComponent("" + amount) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAlerts(_response);
+        });
+    }
+
+    protected processGetAlerts(response: Response): Promise<AlertResponse[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AlertResponse[];
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AlertResponse[]>(null as any);
+    }
+
     connect(): Promise<void> {
         let url_ = this.baseUrl + "/api/alerts/sse";
         url_ = url_.replace(/[?&]$/, "");
@@ -425,6 +462,14 @@ export class TurbineClient {
     }
 }
 
+export interface AlertResponse {
+    id?: string;
+    turbineId?: string | undefined;
+    alerted?: string;
+    message?: string | undefined;
+    severity?: number;
+}
+
 export interface LoginResponse {
     jwt?: string;
 }
@@ -472,14 +517,6 @@ export interface TurbineTelemetryResponse {
     gearboxTemp?: number;
     vibration?: number;
     status?: string;
-}
-
-export interface AlertResponse {
-    id?: string;
-    turbineId?: string | undefined;
-    alerted?: string;
-    message?: string | undefined;
-    severity?: number;
 }
 
 export interface CommandRequest {

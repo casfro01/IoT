@@ -40,6 +40,7 @@ public class Program
         services.AddScoped<ITurbineService, TurbineService>();
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<TurbineSubscriberService>();
+        services.AddScoped<AlertSubscriberService>();
         
         // seeder
         //services.AddScoped<ISeeder, BogusSeed>();
