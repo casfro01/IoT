@@ -2,7 +2,7 @@ import "../DashboardPage.css";
 import { useMemo } from "react";
 import type { TurbineTelemetryResponse} from "../../../../core/ServerAPI.ts";
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {metricToChartPoint} from "../DashboardSpecificUtil.ts";
+import {metricToChartPoint} from "../../../../utils/DashboardSpecificUtil.ts";
 
 export function TurbineMetricChart({ metrics }: { metrics: TurbineTelemetryResponse[] }) {
     const data = useMemo(

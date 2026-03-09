@@ -1,85 +1,38 @@
 import "./DashboardPage.css";
-import { useEffect, useMemo, useState } from "react";
-import { useAtom } from "jotai";
-import { useNavigate } from "react-router";
-import { tokenAtom, useRemoveToken } from "../../../core/atoms/token.ts";
+import { useMemo } from "react";
 import { IconCheck } from "../../Icons/Icons.tsx";
-import { turbineClient } from "../../../core/api-clients.ts";
-import type {
-    AlertResponse,
-    TurbineResponse,
-} from "../../../core/ServerAPI.ts";
+import type { AlertResponse } from "../../../core/ServerAPI.ts";
 import {formatKw} from "../../../utils/FormatKw.ts";
-import {latestMetric, turbineStatus} from "./DashboardSpecificUtil.ts";
-import {TurbineCommandPanel} from "./Dashboard_Compontents/TurbineCommandPanel.tsx";
+import {TurbineCommandPanel} from "./Dashboard_Compontents/TurbineCommandPanel/TurbineCommandPanel.tsx";
 import {TurbineMetricChart} from "./Dashboard_Compontents/TurbineMeticChart.tsx";
-
-const METRIC_AMOUNT = 50;
+import {useLogout} from "../../../utils/hooks/useLogout.ts";
+import {useDashboardForm} from "./useDashboardForm.ts";
+import {useIsValidLogin} from "../../../utils/JwtChecker.ts";
+import {useFleetSummary} from "../../../utils/hooks/DashboardHooks/useFleetSummary.ts";
+import {latestMetric, turbineStatus} from "../../../utils/DashboardSpecificUtil.ts";
 
 export default function DashboardPage() {
-    // TODO : use dashboard
-    const [turbines, setTurbines] = useState<TurbineResponse[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [selectedId, setSelectedId] = useState<string>("");
-    const [token] = useAtom(tokenAtom);
-    const navigate = useNavigate();
-    const removeToken = useRemoveToken();
-
-
-    // TODO : sammen med de ovenfor ^^
-    useEffect(() => {
-        let cancelled = false;
-        setLoading(true);
-        setError(null);
-        turbineClient
-            .getTurbines(METRIC_AMOUNT)
-            .then((list) => {
-                if (cancelled) return;
-                setTurbines(list ?? []);
-                if (selectedId === "" && list && list.length > 0) {
-                    setSelectedId(list[0].id ?? "");
-                }
-            })
-            .catch(() => {
-                if (!cancelled) setError("Kunne ikke hente turbiner.");
-            })
-            .finally(() => {
-                if (!cancelled) setLoading(false);
-            });
-        return () => {
-            cancelled = true;
-        };
-    }, [token, navigate]);
-
+    const {
+        turbines,
+        loading,
+        error,
+        selectedId,
+        setSelectedId
+    } = useDashboardForm();
+    const logout = useLogout();
+    const validLogin = useIsValidLogin();
+    const fleetSummary = useFleetSummary(turbines);
+    
     const selected = useMemo(() => {
         return turbines.find((t) => t.id === selectedId) ?? turbines[0] ?? null;
     }, [turbines, selectedId]);
 
-    const fleetSummary = useMemo(() => {
-        const totalTurbines = turbines.length;
-        const online = turbines.filter((t) => turbineStatus(t) === "running").length;
-        const withAlerts = turbines.filter((t) => (t.alerts?.length ?? 0) > 0).length;
-        const offline = turbines.filter((t) => turbineStatus(t) === "stopped").length;
-        const totalPower = turbines.reduce((sum, t) => {
-            const p = latestMetric(t)?.powerOutput;
-            return sum + (p ?? 0);
-        }, 0);
-        const windSum = turbines.reduce((sum, t) => {
-            const w = latestMetric(t)?.windSpeed;
-            return sum + (w ?? 0);
-        }, 0);
-        const avgWind = totalTurbines > 0 ? windSum / totalTurbines : 0;
-        return { totalTurbines, online, withAlerts, offline, totalPower, avgWind };
-    }, [turbines]);
 
-    // todo - måske lave en helper ting til denne i stedet?
     const handleLogout = async () => {
-        removeToken(null);
-        navigate("/login", { replace: true });
+        logout();
     };
 
-    if (!token) {
+    if (!validLogin) {
         return null;
     }
     if (loading && turbines.length === 0) {

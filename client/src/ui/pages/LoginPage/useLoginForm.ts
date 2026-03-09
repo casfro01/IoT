@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import {useEffect, useState} from "react";
 import type {LoginForm} from "../../../utils/hooks/useLogin.ts";
 import {validateEmail} from "../../../utils/ValidateEmail.ts";
 import {Login } from "../../../utils/hooks/useLogin.ts";
@@ -15,7 +15,11 @@ export interface AlertState {
 export const useLoginProtector = () => {
     const valid = useIsValidLogin();
     const navigate = useNavigate();
-    if (valid) navigate("/");
+    useEffect(() => {
+        if (valid) {
+            navigate("/");
+        }
+    }, [valid, navigate]);
 }
 
 export const useLoginForm = () => {

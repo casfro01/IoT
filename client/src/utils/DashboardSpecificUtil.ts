@@ -1,4 +1,4 @@
-import type {TurbineResponse, TurbineTelemetryResponse} from "../../../core/ServerAPI.ts";
+import type {TurbineResponse, TurbineTelemetryResponse} from "../core/ServerAPI.ts";
 
 export function metricToChartPoint(m: TurbineTelemetryResponse): {
     timestampUtc: string;
