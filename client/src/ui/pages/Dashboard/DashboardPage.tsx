@@ -7,274 +7,17 @@ import { IconCheck } from "../../Icons/Icons.tsx";
 import { turbineClient } from "../../../core/api-clients.ts";
 import type {
     AlertResponse,
-    CommandRequest,
     TurbineResponse,
-    TurbineTelemetryResponse,
 } from "../../../core/ServerAPI.ts";
-import {
-    CartesianGrid,
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from "recharts";
+import {formatKw} from "../../../utils/FormatKw.ts";
+import {latestMetric, turbineStatus} from "./DashboardSpecificUtil.ts";
+import {TurbineCommandPanel} from "./Dashboard_Compontents/TurbineCommandPanel.tsx";
+import {TurbineMetricChart} from "./Dashboard_Compontents/TurbineMeticChart.tsx";
 
 const METRIC_AMOUNT = 50;
 
-
-function formatKw(value: number) {
-    return `${value.toLocaleString("da-DK", { maximumFractionDigits: 0 })} kW`;
-}
-
-
-function TurbineCommandPanel({ turbineId: _turbineId }: { turbineId: string }) {
-    const [form, setForm] = useState<CommandRequest>({
-        action: "start",
-        value: "",
-    });
-    const [submitting, setSubmitting] = useState(false);
-    const [status, setStatus] = useState<null | { type: "success" | "error"; message: string }>(null);
-
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-    ) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
-        if (status) setStatus(null);
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (form.action !== "start" && !form.value!.trim()) {
-            setStatus({ type: "error", message: "Angiv en værdi." });
-            return;
-        }
-
-        setSubmitting(true);
-        try {
-            const request: CommandRequest = {
-                action: form.action,
-                value: form.value 
-            };
-            await turbineClient.executeCommand(_turbineId, request);
-
-            setStatus({ type: "success", message: "Kommando sendt til turbine." });
-        } catch {
-            setStatus({ type: "error", message: "Kunne ikke sende kommando. Prøv igen." });
-        } finally {
-            setSubmitting(false);
-        }
-    };
-
-    const showPitch = form.action === "setPitch";
-    const showStop = form.action === "stop";
-    const showInterval = form.action === "setInterval"
-
-    return (
-        <article className="detail-card" aria-label="Styring af turbine">
-            <h3 className="detail-subtitle">Styring</h3>
-            <form className="command-form" onSubmit={handleSubmit}>
-                <div className="command-row">
-                    <div className="command-field">
-                        <label htmlFor="command">Kommando</label>
-                        <select
-                            id="command"
-                            name="action"
-                            value={form.action}
-                            onChange={handleChange}
-                        >
-                            <option value="start">Start</option>
-                            <option value="stop">Stop</option>
-                            <option value="setPitch">Sæt pitch</option>
-                            <option value="setInterval">Sæt interval</option>
-                        </select>
-                    </div>
-
-                    {showStop && (
-                        <div className="command-field">
-                            <label htmlFor="stopValue">Begrundelse</label>
-                            <input
-                                id="stopValue"
-                                name="value"
-                                type="text"
-                                placeholder="Begrundelse"
-                                value={form.value}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    )}
-
-                    {showPitch && (
-                        <div className="command-field">
-                            <label htmlFor="pitchDeg">Pitch (°)</label>
-                            <input
-                                id="pitchDeg"
-                                name="value"
-                                type="number"
-                                min="-5"
-                                max="90"
-                                step="0.1"
-                                placeholder="f.eks. 12.5"
-                                value={form.value}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    )}
-
-                    {showInterval && (
-                        <div className="command-field">
-                            <label htmlFor="interval">Interval (sekunder)</label>
-                            <input
-                                id="interval"
-                                name="value"
-                                type="number"
-                                min="1"
-                                max="60"
-                                step="1"
-                                placeholder="1-60 sekunder"
-                                value={form.value}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    )}
-                </div>
-
-                {status && (
-                    <div
-                        className={
-                            "command-status " +
-                            (status.type === "success"
-                                ? "command-status-success"
-                                : "command-status-error")
-                        }
-                    >
-                        {status.message}
-                    </div>
-                )}
-
-                <div className="command-actions">
-                    <button type="submit" className="btn-ghost" disabled={submitting}>
-                        {submitting ? "Sender…" : "Send kommando"}
-                    </button>
-                </div>
-            </form>
-        </article>
-    );
-}
-
-function metricToChartPoint(m: TurbineTelemetryResponse): {
-    timestampUtc: string;
-    windspeed?: number;
-    poweroutput?: number;
-    rotorspeed?: number;
-} {
-    return {
-        timestampUtc: m.timestamp ?? "",
-        windspeed: m.windSpeed,
-        poweroutput: m.powerOutput,
-        rotorspeed: m.rotorSpeed,
-    };
-}
-
-function TurbineMetricChart({ metrics }: { metrics: TurbineTelemetryResponse[] }) {
-    const data = useMemo(
-        () => [...metrics].sort((a, b) => (a.timestamp ?? "").localeCompare(b.timestamp ?? "")).map(metricToChartPoint),
-        [metrics],
-    );
-
-    return (
-        <article className="detail-card" aria-label="Historik for turbine metrics">
-            <h3 className="detail-subtitle">Historik</h3>
-            {data.length > 0 ? (
-                <div className="metric-chart-wrapper">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart
-                            data={data}
-                            margin={{ top: 8, right: 12, left: 0, bottom: 4 }}
-                        >
-                            <CartesianGrid stroke="#e5ecc8" strokeDasharray="3 3" />
-                            <XAxis
-                                dataKey="timestampUtc"
-                                tickFormatter={(v) =>
-                                    new Date(v).toLocaleTimeString("da-DK", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })
-                                }
-                                fontSize={11}
-                            />
-                            <YAxis
-                                yAxisId="left"
-                                fontSize={11}
-                                tickFormatter={(v: number) => `${v.toFixed(0)}`}
-                            />
-                            <YAxis
-                                yAxisId="right"
-                                orientation="right"
-                                fontSize={11}
-                                tickFormatter={(v: number) => `${v.toFixed(1)}`}
-                            />
-                            <Tooltip
-                                labelFormatter={(v) =>
-                                    new Date(v).toLocaleString("da-DK", {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                        second: "2-digit",
-                                    })
-                                }
-                            />
-                            <Line
-                                yAxisId="left"
-                                type="monotone"
-                                dataKey="poweroutput"
-                                name="Power (kW)"
-                                stroke="#4a5e2f"
-                                dot={false}
-                                strokeWidth={2}
-                            />
-                            <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey="windspeed"
-                                name="Vind (m/s)"
-                                stroke="#8db848"
-                                dot={false}
-                                strokeWidth={1.7}
-                            />
-                            <Line
-                                yAxisId="right"
-                                type="monotone"
-                                dataKey="rotorspeed"
-                                name="Rotor (rpm)"
-                                stroke="#c27e3a"
-                                dot={false}
-                                strokeWidth={1.5}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
-                </div>
-            ) : (
-            <div className="detail-hint">Ingen data i valgt periode.</div>
-            )}
-        </article>
-    );
-}
-
-function latestMetric(t: TurbineResponse): TurbineTelemetryResponse | null {
-    const m = t.metrics;
-    return m && m.length > 0 ? m[0]! : null;
-}
-
-function turbineStatus(t: TurbineResponse): string {
-    const s = latestMetric(t)?.status;
-    if (s === "running" || s === "stopped") return s;
-    return s ? s : "Offline";
-}
-
 export default function DashboardPage() {
+    // TODO : use dashboard
     const [turbines, setTurbines] = useState<TurbineResponse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -284,12 +27,8 @@ export default function DashboardPage() {
     const removeToken = useRemoveToken();
 
 
+    // TODO : sammen med de ovenfor ^^
     useEffect(() => {
-        /*
-        if (!token) {
-            navigate("/login", { replace: true });
-            return;
-        }*/
         let cancelled = false;
         setLoading(true);
         setError(null);
@@ -334,6 +73,7 @@ export default function DashboardPage() {
         return { totalTurbines, online, withAlerts, offline, totalPower, avgWind };
     }, [turbines]);
 
+    // todo - måske lave en helper ting til denne i stedet?
     const handleLogout = async () => {
         removeToken(null);
         navigate("/login", { replace: true });
