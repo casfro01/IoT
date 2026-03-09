@@ -1,4 +1,5 @@
-﻿using dataaccess;
+﻿using System.Text.Json;
+using dataaccess;
 using service.Models.Responses;
 using StateleSSE.AspNetCore;
 
@@ -49,7 +50,8 @@ public class TurbineSubscriberService(MyDbContext ctx, ISseBackplane backplane)
 
     public async Task NotifySubscriber(string turbineId, TurbineTelemetryResponse data)
     {
-        await backplane.Clients.SendToGroupsAsync(["all",  turbineId], data);
+        var jsonData = JsonSerializer.Serialize(data);
+        await backplane.Clients.SendToGroupsAsync(["all",  turbineId], jsonData);
     }
     
 }

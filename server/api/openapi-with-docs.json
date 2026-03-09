@@ -6,6 +6,19 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/alerts/Connect": {
+      "get": {
+        "tags": [
+          "Alert"
+        ],
+        "operationId": "Alert_Connect",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/alerts/ConnectToAlerts": {
       "get": {
         "tags": [
@@ -68,7 +81,7 @@
         "tags": [
           "Alert"
         ],
-        "operationId": "Alert_Connect",
+        "operationId": "Alert_Connect2",
         "responses": {
           "200": {
             "description": ""

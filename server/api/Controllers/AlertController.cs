@@ -21,6 +21,12 @@ public class AlertController(ISseBackplane backplane,
     IAlertService alertService,
     AlertSubscriberService subscriberService): RealtimeControllerBase(backplane)
 {
+    [AllowAnonymous]
+    [HttpGet(nameof(Connect))]
+    public new async Task Connect()
+    {
+        await base.Connect();
+    }
     /// <summary>
     /// Forbind til alerts; få vigtige opdateringer
     /// </summary>

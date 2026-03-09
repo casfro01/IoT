@@ -17,6 +17,36 @@ export class AlertClient {
         this.baseUrl = baseUrl ?? "";
     }
 
+    connect(): Promise<void> {
+        let url_ = this.baseUrl + "/api/alerts/Connect";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processConnect(_response);
+        });
+    }
+
+    protected processConnect(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
     connectToAlerts(connectionId: string | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/alerts/ConnectToAlerts?";
         if (connectionId === null)
@@ -88,7 +118,7 @@ export class AlertClient {
         return Promise.resolve<AlertResponse[]>(null as any);
     }
 
-    connect(): Promise<void> {
+    connect2(): Promise<void> {
         let url_ = this.baseUrl + "/api/alerts/sse";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -99,11 +129,11 @@ export class AlertClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processConnect(_response);
+            return this.processConnect2(_response);
         });
     }
 
-    protected processConnect(response: Response): Promise<void> {
+    protected processConnect2(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {

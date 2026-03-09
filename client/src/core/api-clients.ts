@@ -1,4 +1,4 @@
-﻿import {AuthClient} from "./ServerAPI.ts"
+﻿import {AlertClient, AuthClient} from "./ServerAPI.ts"
 import {TurbineClient} from "./ServerAPI.ts"
 import {TOKEN_KEY, tokenStorage} from "./atoms/token.ts";
 
@@ -23,3 +23,7 @@ const baseUrl = undefined;
 
 export const authClient = new AuthClient(baseUrl, { fetch: customFetch });
 export const turbineClient = new TurbineClient(baseUrl, { fetch: customFetch });
+export const alertClient = new AlertClient(baseUrl, { fetch: customFetch });
+
+// sse
+export const SSE_PATH = "/api/alerts/connect";
