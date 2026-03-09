@@ -5,12 +5,18 @@ import {Login } from "../../../utils/hooks/useLogin.ts";
 import {tokenAtom} from "../../../core/atoms/token.ts";
 import {useAtom} from "jotai";
 import {useNavigate} from "react-router";
+import {useIsValidLogin} from "../../../utils/JwtChecker.ts";
 
 export interface AlertState {
     type: "error" | "success" | null;
     message: string;
 }
 
+export const useLoginProtector = () => {
+    const valid = useIsValidLogin();
+    const navigate = useNavigate();
+    if (valid) navigate("/");
+}
 
 export const useLoginForm = () => {
     const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
@@ -42,7 +48,6 @@ export const useLoginForm = () => {
             if (result) {
                 setJwt(result);
                 setAlert({ type: "success", message: "Login lykkedes! Du omdirigeres nu…" });
-                // todo : evt sæt til /dashboard eller noget
                 navigator("/");
             }
             else{

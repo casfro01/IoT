@@ -2,6 +2,7 @@ import {createBrowserRouter, Outlet, RouterProvider} from "react-router";
 import LoginPage from "./pages/LoginPage/LoginPage.tsx";
 import DashboardPage from "./pages/Dashboard/DashboardPage.tsx";
 import {Toaster} from "react-hot-toast";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
                     children: [
                         {
                             index: true,
-                            element: <DashboardPage />,
+                            element: <ProtectedRoute requiredRole="Operator"><DashboardPage/></ProtectedRoute>,
                         },
                         {
                             path: "login",

@@ -1,10 +1,9 @@
 ﻿import "./LoginPage.css";
 import {IconAlert, IconCheck, IconEye, IconEyeOff, IconLock, IconMail} from "../../Icons/Icons.tsx";
 import {validateEmail} from "../../../utils/ValidateEmail.ts";
-import { useLoginForm } from "./useLoginForm.ts";
+import {useLoginForm, useLoginProtector} from "./useLoginForm.ts";
 
 export default function LoginPage() {
-    
     const {
         form,
         showPw,
@@ -17,6 +16,8 @@ export default function LoginPage() {
         setTouched,
         handleSubmit,
     } = useLoginForm();
+
+    useLoginProtector(); // fjerner dig fra denne side, hvis du har et valid jwt nøgle.
 
     const emailError = touched.email && form.email && !validateEmail(form.email);
     const passwordError = touched.password && form.password.length > 0 && form.password.length < 6;

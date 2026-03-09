@@ -283,11 +283,13 @@ export default function DashboardPage() {
     const navigate = useNavigate();
     const removeToken = useRemoveToken();
 
+
     useEffect(() => {
+        /*
         if (!token) {
             navigate("/login", { replace: true });
             return;
-        }
+        }*/
         let cancelled = false;
         setLoading(true);
         setError(null);
