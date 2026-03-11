@@ -1,12 +1,14 @@
 import type {TurbineResponse} from "../../../core/ServerAPI.ts";
 import {useMemo} from "react";
 import {latestMetric, turbineStatus} from "../../DashboardSpecificUtil.ts";
+import {useAlerts} from "./useAlerts.ts";
 
 export const useFleetSummary = (turbines: TurbineResponse[]) => {
+    const {alerts} = useAlerts();
     const fleetSummary = useMemo(() => {
         const totalTurbines = turbines.length;
         const online = turbines.filter((t) => turbineStatus(t) === "running").length;
-        const withAlerts = turbines.filter((t) => (t.alerts?.length ?? 0) > 0).length;
+        const withAlerts = alerts.length;
         const offline = turbines.filter((t) => turbineStatus(t) === "stopped").length;
         const totalPower = turbines.reduce((sum, t) => {
             const p = latestMetric(t)?.powerOutput;

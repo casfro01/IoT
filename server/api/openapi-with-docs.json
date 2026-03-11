@@ -76,6 +76,29 @@
         }
       }
     },
+    "/api/alerts/fakeingalerts": {
+      "get": {
+        "tags": [
+          "Alert"
+        ],
+        "operationId": "Alert_CreateFakeAlert",
+        "parameters": [
+          {
+            "name": "turbineId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/alerts/sse": {
       "get": {
         "tags": [

@@ -16,6 +16,7 @@ export default function DashboardPage() {
         turbines,
         loading,
         error,
+        alerts,
         selectedId,
         setSelectedId
     } = useDashboardForm();
@@ -272,14 +273,14 @@ export default function DashboardPage() {
                                     <div className="detail-metric">
                                         <span className="metric-label">Alarmer</span>
                                         <div className="metric-main metric-main-alerts">
-                                            {(selected.alerts?.length ?? 0) === 0 ? (
+                                            {(alerts.filter(a => a?.turbineId === selectedId).length ?? 0) === 0 ? (
                                                 <>
                                                     <IconCheck />
                                                     <span>Ingen aktive alarmer</span>
                                                 </>
                                             ) : (
                                                 <ul className="alert-list" aria-label="Aktive alarmer">
-                                                    {selected.alerts!.map((a: AlertResponse) => (
+                                                    {alerts.filter(alrt => alrt?.turbineId === selectedId).map((a: AlertResponse) => (
                                                         <li key={a.id} className="alert-item">
                                                             <span className="alert-severity">Severity {a.severity ?? 0}</span>
                                                             <span className="alert-message">{a.message ?? "—"}</span>

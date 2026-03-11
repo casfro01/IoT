@@ -1,4 +1,5 @@
-﻿using dataaccess;
+﻿using System.Text.Json;
+using dataaccess;
 using service.Models.Responses;
 using StateleSSE.AspNetCore;
 
@@ -19,7 +20,8 @@ public class AlertSubscriberService(MyDbContext ctx, ISseBackplane backplane)
 
     public async Task NotifySubscriber(AlertResponse alert)
     {
-        await backplane.Clients.SendToGroupAsync("alerts", alert);
+        var jsonData = JsonSerializer.Serialize(alert);
+        await backplane.Clients.SendToGroupAsync("alerts", jsonData);
     }
     
 }

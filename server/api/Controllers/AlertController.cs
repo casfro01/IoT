@@ -64,4 +64,21 @@ public class AlertController(ISseBackplane backplane,
                 .ToListAsync());
     }
      */
+    
+    
+
+    [HttpGet("fakeingalerts")]
+    [AllowAnonymous]
+    public async Task CreateFakeAlert(string turbineId)
+    {
+        var fakeAlert = new AlertResponse
+        {
+            Id = Guid.NewGuid().ToString(),
+            TurbineId = turbineId,
+            Alerted = DateTime.UtcNow,
+            Message = "this is a fake alert, not to worry",
+            Severity = new Random().Next(0, 10)
+        };
+        await subscriberService.NotifySubscriber(fakeAlert);
+    }
 }

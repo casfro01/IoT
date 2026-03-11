@@ -1,10 +1,12 @@
 import {type Dispatch, type SetStateAction, useEffect, useState} from "react";
-import type {TurbineResponse, TurbineTelemetryResponse} from "../../../core/ServerAPI.ts";
+import type {AlertResponse, TurbineResponse, TurbineTelemetryResponse} from "../../../core/ServerAPI.ts";
 import {useAtom} from "jotai";
 import {tokenAtom} from "../../../core/atoms/token.ts";
 import {useNavigate} from "react-router";
 import {alertClient, SSE_PATH, turbineClient} from "../../../core/api-clients.ts";
 import {StateleSSEClient} from "../../../core/SseClient.ts";
+import toast from "react-hot-toast";
+import {useAlerts} from "../../../utils/hooks/DashboardHooks/useAlerts.ts";
 
 const METRIC_AMOUNT = 50;
 
@@ -13,12 +15,13 @@ export const useDashboardForm = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedId, setSelectedId] = useState<string>("");
+    const {alerts, setAlerts} = useAlerts();
     const [token] = useAtom(tokenAtom);
     const navigate = useNavigate();
 
     useEffect(() => {
         const sse = new StateleSSEClient(SSE_PATH);
-        sseListenerHelper(sse, setTurbines);
+        sseListenerHelper(sse, setTurbines, setAlerts);
 
         let cancelled = false;
         setLoading(true);
@@ -47,21 +50,31 @@ export const useDashboardForm = () => {
         turbines,
         loading,
         error,
+        alerts,
         selectedId,
         setSelectedId,
     }
 }
 
 
-function sseListenerHelper(client: StateleSSEClient, setTurbineData: Dispatch<SetStateAction<TurbineResponse[]>>){
+function sseListenerHelper(client: StateleSSEClient, setTurbineData: Dispatch<SetStateAction<TurbineResponse[]>>, setAlertData: Dispatch<SetStateAction<AlertResponse[]>>){
     // alerts
-    client.listen(
+    client.listen<AlertResponse>(
         async(id) => {
             await alertClient.connectToAlerts(id);
-            return {}
+            return { group: "alerts", data: null}
         },
-        () => {
-
+        (data) => {
+            setAlertData(prev => {
+                const alert: AlertResponse =
+                    typeof data === "string" ? mapAlert(JSON.parse(data)) : data;
+                toast(alert.message ?? "Warming", {
+                    icon: '⚠️',
+                });
+                if (!alert) return prev;
+                if (prev.some(a => a.id === alert.id)) return prev; // for at undgå duplikater ig, jeg er sej - Alex, hvis du læser dette giv mig lige 12 ik' jeg er så sød
+                return [alert, ...prev];
+            })
         }
     );
     client.listen<TurbineTelemetryResponse>(async (id) => {
@@ -87,7 +100,7 @@ function sseListenerHelper(client: StateleSSEClient, setTurbineData: Dispatch<Se
     (err) => console.error("SSE ERROR:", err));
 }
 
-function mapTelemetry(raw): TurbineTelemetryResponse {
+function mapTelemetry(raw: any): TurbineTelemetryResponse {
     return {
         turbineName: raw.TurbineName,
         timestamp: raw.Timestamp,
@@ -103,4 +116,14 @@ function mapTelemetry(raw): TurbineTelemetryResponse {
         vibration: raw.Vibration,
         status: raw.Status,
     };
+}
+
+function mapAlert(parse: any): AlertResponse {
+    return {
+        id: parse.Id,
+        turbineId: parse.TurbineId,
+        alerted: parse.Alerted,
+        message: parse.Message,
+        severity: parse.severity
+    }
 }

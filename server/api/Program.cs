@@ -141,7 +141,7 @@ public class Program
             
             var db = scope.ServiceProvider.GetRequiredService<MyDbContext>();
             db.Database.EnsureCreated();
-            scope.ServiceProvider.GetRequiredService<ISeeder>().Seed().GetAwaiter().GetResult();
+            //scope.ServiceProvider.GetRequiredService<ISeeder>().Seed().GetAwaiter().GetResult();
         }
         
         app.Run();

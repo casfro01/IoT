@@ -18,4 +18,9 @@ public class AlertResponse
         Message = entity.Message;
         Severity = entity.Severity;
     }
+
+    public AlertResponse()
+    {
+        
+    }
 }
