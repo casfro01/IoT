@@ -124,6 +124,6 @@ function mapAlert(parse: any): AlertResponse {
         turbineId: parse.TurbineId,
         alerted: parse.Alerted,
         message: parse.Message,
-        severity: parse.severity
+        severity: parse.Severity
     }
 }
