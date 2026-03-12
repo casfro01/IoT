@@ -126,6 +126,7 @@ public class Program
         app.UseSwaggerUi();
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseExceptionHandler();
         app.MapControllers();
         
         //app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().SetIsOriginAllowed(x => true));
