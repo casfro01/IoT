@@ -43,6 +43,7 @@ export const useDashboardForm = () => {
             });
         return () => {
             cancelled = true;
+            sse.disconnect();
         };
     }, [token, navigate]);
 
@@ -88,13 +89,13 @@ function sseListenerHelper(client: StateleSSEClient, setTurbineData: Dispatch<Se
                 typeof data === "string" ? mapTelemetry(JSON.parse(data)) : data;
             const turb = prev.find((t) => t.displayname == telemetry.turbineName);
             if (!turb) return prev;
-            if (turb.metrics){
-                turb.metrics = [...turb.metrics, telemetry];
-            }
-            else{
-                turb.metrics = [telemetry];
-            }
-            return [...prev]
+            // måske er det bedre ikke at køre spread for hver turbine men bare kun på den som får opdateringer
+            // som vi gør nu
+            return prev.map(t => t.id === turb.id ?
+                {
+                ...t,
+                    metrics: t.metrics ? [...t.metrics, telemetry] : [telemetry],
+            } : t);
         })
     },
     (err) => console.error("SSE ERROR:", err));

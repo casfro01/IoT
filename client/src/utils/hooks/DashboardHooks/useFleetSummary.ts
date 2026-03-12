@@ -20,7 +20,7 @@ export const useFleetSummary = (turbines: TurbineResponse[]) => {
         }, 0);
         const avgWind = totalTurbines > 0 ? windSum / totalTurbines : 0;
         return { totalTurbines, online, withAlerts, offline, totalPower, avgWind };
-    }, [turbines]);
+    }, [turbines, alerts]);
 
 
     return fleetSummary;

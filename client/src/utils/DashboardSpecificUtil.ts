@@ -16,7 +16,7 @@ export function metricToChartPoint(m: TurbineTelemetryResponse): {
 
 export function latestMetric(t: TurbineResponse): TurbineTelemetryResponse | null {
     const m = t.metrics;
-    return m && m.length > 0 ? m[0]! : null;
+    return m && m.length > 0 ? m[m.length - 1]! : null;
 }
 
 export function turbineStatus(t: TurbineResponse): string {
