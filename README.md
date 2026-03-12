@@ -54,7 +54,7 @@ Systemet gør det muligt for en vindmølleinspektør at:
 
 ## Improvements
 
-adadadd
+ - Redisbackplane -> fra "in memory" til 3rd party; for skalerbarheden... men det går fornu.
 
 ## Authors
 
