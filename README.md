@@ -55,6 +55,9 @@ Systemet gør det muligt for en vindmølleinspektør at:
 ## Improvements
 
  - Redisbackplane -> fra "in memory backplane" til redis 3rd party; for skalerbarheden... men det går fornu.
+ - Vise exeptions / fejl for brugeren, så de ved, hvad de gør forkert. F.eks. når man sender en kommando afsted, så kunne det være fint hvis den sagde "hey denne turbine kører allerede, så er der ingen grund til at aktivere den igen." el. lign.
+ - Man kunne også forbinde den bruger som udførte kommandoen til relationen i db. For lige nu kan man ikke se hvilken bruger der udførte kommandoen, men bare at den er blevet udført, og på hvilken turbine den er udført på.
+ - Se en længere historik fra turbinenerne, så det ikke kun er de 50 datapunkter, og derfra bare hvad der indsamles - det kunne godt reworkes - men det kommer vel også an på hvad kunden gerne vil have. Desuden kunne man også bruge de individuelle subscriber events som man kan tilslutte sig, istede for at tilslutte sig alle på én gang - men det er vel smag og behag - tænker bare på, hvis der var 1000 turbiner, så kan det også bliver stramt for netværket.
 
 ## Authors
 
