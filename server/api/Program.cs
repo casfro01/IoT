@@ -41,6 +41,7 @@ public class Program
         services.AddScoped<IAlertService, AlertService>();
         services.AddScoped<TurbineSubscriberService>();
         services.AddScoped<AlertSubscriberService>();
+        services.AddScoped<CommandValidator>();
         
         // seeder
         //services.AddScoped<ISeeder, BogusSeed>();

@@ -458,14 +458,14 @@ export class TurbineClient {
         return Promise.resolve<TurbineResponse[]>(null as any);
     }
 
-    executeCommand(sensorId: string, request: CommandRequest): Promise<void> {
+    executeCommand(sensorId: string, requestDto: CommandRequestDto): Promise<void> {
         let url_ = this.baseUrl + "/api/Turbine/{sensorId}/command";
         if (sensorId === undefined || sensorId === null)
             throw new globalThis.Error("The parameter 'sensorId' must be defined.");
         url_ = url_.replace("{sensorId}", encodeURIComponent("" + sensorId));
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(request);
+        const content_ = JSON.stringify(requestDto);
 
         let options_: RequestInit = {
             body: content_,
@@ -583,7 +583,7 @@ export interface TurbineTelemetryResponse {
     status?: string;
 }
 
-export interface CommandRequest {
+export interface CommandRequestDto {
     action: string;
     value?: string | undefined;
 }

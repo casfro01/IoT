@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api;
@@ -13,6 +14,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         var (statusCode, title) = exception switch
         {
             UnauthorizedAccessException => (401, "Unauthorized"),
+            ValidationException => (400, "Bad Request; Validation Errors"),
             _ => (500, "Internal Server Error")
         };
 

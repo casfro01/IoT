@@ -1,10 +1,10 @@
 import {useState} from "react";
-import type {CommandRequest} from "../../../../../core/ServerAPI.ts";
+import type {CommandRequestDto} from "../../../../../core/ServerAPI.ts";
 import {turbineClient} from "../../../../../core/api-clients.ts";
 
 
 export const useCommandForm = (_turbineId: string) => {
-    const [form, setForm] = useState<CommandRequest>({
+    const [form, setForm] = useState<CommandRequestDto>({
         action: "start",
         value: "",
     });
@@ -21,7 +21,7 @@ export const useCommandForm = (_turbineId: string) => {
 
         setSubmitting(true);
         try {
-            const request: CommandRequest = {
+            const request: CommandRequestDto = {
                 action: form.action,
                 value: form.value
             };

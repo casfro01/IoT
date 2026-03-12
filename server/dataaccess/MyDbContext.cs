@@ -49,7 +49,12 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Action).HasColumnName("action");
             entity.Property(e => e.Timeexecuted).HasColumnName("timeexecuted");
+            entity.Property(e => e.Turbineid).HasColumnName("turbineid");
             entity.Property(e => e.Value).HasColumnName("value");
+
+            entity.HasOne(d => d.Turbine).WithMany(p => p.Commandhistories)
+                .HasForeignKey(d => d.Turbineid)
+                .HasConstraintName("commandhistory_turbineid_fkey");
         });
 
         modelBuilder.Entity<Turbine>(entity =>

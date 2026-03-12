@@ -323,11 +323,11 @@
           }
         ],
         "requestBody": {
-          "x-name": "request",
+          "x-name": "requestDto",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CommandRequest"
+                "$ref": "#/components/schemas/CommandRequestDto"
               }
             }
           },
@@ -525,7 +525,7 @@
           }
         }
       },
-      "CommandRequest": {
+      "CommandRequestDto": {
         "type": "object",
         "additionalProperties": false,
         "required": [

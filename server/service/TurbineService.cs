@@ -9,9 +9,11 @@ using Sieve.Models;
 
 namespace service;
 
-public interface ITurbineService : IService<TurbineTelemetryResponse, TurbineTelemetry, CommandRequest>
+public interface ITurbineService : IService<TurbineTelemetryResponse, TurbineTelemetry, ExtendedCommandRequest>
 {
     public Task<List<TurbineResponse>> GetTurbines(int includeMetrics);
+    
+    public Task<bool> ExecuteTurbineCommand(ExtendedCommandRequest request);
 }
 
 /// <summary>
@@ -70,13 +72,24 @@ public class TurbineService(MyDbContext db) : ITurbineService
     }
 
     /// <summary>
-    /// Udfører en kommando til at justere på turbinenen - bliver nok flyttet, lucas hvad synes du? hmmmm det ved jeg ikke
+    /// Udfører en kommando til at justere på turbinenen
     /// </summary>
     /// <param name="request"></param>
-    /// <exception cref="NotImplementedException"></exception>
-    public async Task<TurbineTelemetryResponse> Update(CommandRequest request)
+    /// <returns>null</returns>
+    public async Task<TurbineTelemetryResponse> Update(ExtendedCommandRequest request)
     {
-        throw new NotImplementedException();
+        var command = new Commandhistory
+        {
+            Id = Guid.NewGuid().ToString(),
+            Turbineid = request.SensorId,
+            Timeexecuted = DateTime.UtcNow,
+            Action = request.Action.Id,
+            Value = request.Value,
+        };
+        
+        db.Commandhistories.Add(command);
+        await db.SaveChangesAsync();
+        return null; // TODO fornu der returnere den ikke noget, ig for hvem skal bruge TurbineTelemetru Response til noget
     }
 
     /// <summary>
@@ -118,5 +131,18 @@ public class TurbineService(MyDbContext db) : ITurbineService
         }
 
         return list;
+    }
+
+    public async Task<bool> ExecuteTurbineCommand(ExtendedCommandRequest request)
+    {
+        try
+        {
+            await Update(request);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

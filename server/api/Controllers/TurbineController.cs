@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using dataaccess;
 using DataAccess.Entities;
@@ -25,7 +26,8 @@ public class TurbineController(
     IGroupRealtimeManager groupManager,
     TurbineSubscriberService subService,
     ITurbineService turbineService,
-    IMqttClientService mqtt) : RealtimeControllerBase(backplane)
+    IMqttClientService mqtt,
+    CommandValidator validator) : RealtimeControllerBase(backplane)
 {
     [HttpGet(nameof(ConnectToAllTurbines))]
     public async Task ConnectToAllTurbines(string connectionId)
@@ -47,15 +49,18 @@ public class TurbineController(
 
     [HttpPost("{sensorId}/command")]
     // tilføj CommandResponse return her igen måske i stedet for void
-    public async Task ExecuteCommand(string sensorId, [FromBody] CommandRequest request)
+    public async Task ExecuteCommand(string sensorId, [FromBody] CommandRequestDto requestDto)
     {
+        var request = requestDto.ToCommandRequest();
+        var valid = await validator.ValidateCommand(sensorId, request);
+        if (!valid.Valid) throw new ValidationException(valid.Message);
         // dette skal ændres med en enum i commandrequest eller sådan noget, det hele er faktisk ret most
         var payload = new Dictionary<string, object?>
         {
             ["action"] = request.Action
         };
 
-        switch (request.Action)
+        switch (request.Action.Name)
         {
             case "setPitch":
                 payload["angle"] = request.Value;
@@ -71,7 +76,14 @@ public class TurbineController(
         }
         
         string json = JsonSerializer.Serialize(payload);
-        
-        await mqtt.PublishAsync($"farm/29c129fe-d28e-4a12-810e-af5ac7456fad/windmill/{sensorId}/command", json);
+        try
+        {
+            await mqtt.PublishAsync($"farm/29c129fe-d28e-4a12-810e-af5ac7456fad/windmill/{sensorId}/command", json);
+            var res = await turbineService.ExecuteTurbineCommand(new ExtendedCommandRequest(request, sensorId));
+        }
+        catch
+        {
+            throw new Exception("Failed to execute command");
+        }
     }
 }

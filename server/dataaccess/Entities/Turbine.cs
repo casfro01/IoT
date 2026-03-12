@@ -12,4 +12,6 @@ public partial class Turbine
     public virtual ICollection<Alert> Alerts { get; set; } = new List<Alert>();
 
     public virtual ICollection<Turbinemetric> Turbinemetrics { get; set; } = new List<Turbinemetric>();
+    
+    public virtual ICollection<Commandhistory> Commandhistories { get; set; } = new List<Commandhistory>();
 }

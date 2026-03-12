@@ -41,6 +41,7 @@ CREATE TABLE iot.alerts(
 
 CREATE TABLE iot.commandHistory(
     Id TEXT PRIMARY KEY NOT NULL,
+    turbineId TEXT DEFAULT NULL REFERENCES iot.turbines(Id) ON DELETE SET DEFAULT, 
     timeexecuted TIMESTAMP WITH TIME ZONE NOT NULL,
     action INT NOT NULL,
     value TEXT DEFAULT NULL
