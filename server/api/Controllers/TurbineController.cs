@@ -54,10 +54,11 @@ public class TurbineController(
         var request = requestDto.ToCommandRequest();
         var valid = await validator.ValidateCommand(sensorId, request);
         if (!valid.Valid) throw new ValidationException(valid.Message);
-        // dette skal ændres med en enum i commandrequest eller sådan noget, det hele er faktisk ret most
+        // custom enum er lavet i CommandRequest, fordi C# laver og håndterer enums dårligt
+        // derfor blev man lige nødt til at rette det
         var payload = new Dictionary<string, object?>
         {
-            ["action"] = request.Action
+            ["action"] = request.Action.Name
         };
 
         switch (request.Action.Name)
