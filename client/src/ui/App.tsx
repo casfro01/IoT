@@ -16,7 +16,7 @@ function App() {
                     element: <Outlet />,
                     children: [
                         {
-                            index: true,
+                            path: "/",
                             element: <ProtectedRoute requiredRole="Operator"><DashboardPage/></ProtectedRoute>,
                         },
                         {
